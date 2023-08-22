@@ -15,7 +15,7 @@ const BASE_COLS = {
 
 const COLS = {
     ...BASE_COLS,
-    PhdCourse: 'PhD Course'
+    PhdCourse: 'Coll.'
 };
 
 const EXT_COLS = {
@@ -25,16 +25,21 @@ const EXT_COLS = {
 const LIVS2COEF = {"3": 1, "2": 1 / 2, "1": 1 / 3}
 const STDCOEFVOTO = 4 / 3
 
+const MY_COURSE = 'GPD'
+
+const exc = (course) => [].includes(course.CodIns)
+const isPassed = (course) => course.Punti > 0 || exc(course)
+
 const BUCKETS = {
-    AllPassed: (course) => course.Punti > 0,
-    SoftPassed: (course) => course.TipoEsame === 'Soft' && course.Punti > 0,
-    HardPassed: (course) => course.TipoEsame === 'Hard' && course.Punti > 0,
-    HardDigepPassed: (course) => course.TipoEsame === 'Hard' && course.PhdCourse === 'Gestione, produzione e design' && course.Punti > 0,
+    AllPassed: (course) => isPassed(course),
+    SoftPassed: (course) => course.TipoEsame === 'Soft' && isPassed(course),
+    HardPassed: (course) => course.TipoEsame === 'Hard' && isPassed(course),
+    HardDigepPassed: (course) => course.TipoEsame === 'Hard' && course.PhdCourse === MY_COURSE && isPassed(course),
 
     All: (course) => true,
     Soft: (course) => course.TipoEsame === 'Soft',
     Hard: (course) => course.TipoEsame === 'Hard',
-    HardDigep: (course) => course.TipoEsame === 'Hard' && course.PhdCourse === 'Gestione, produzione e design'
+    HardDigep: (course) => course.TipoEsame === 'Hard' && course.PhdCourse === MY_COURSE
 }
 
 function setSyncMessage(message) {
@@ -51,12 +56,16 @@ function makeClass(col) {
 
 document.body.insertAdjacentHTML('beforebegin', `
     <style>
-    #ecrus_summary_tb table {border-collapse: collapse;}
-    #ecrus_summary_tb table td {border: 1px solid black; padding: 3px 10px 3px 10px;}
+    #ecrus_summary_tb table {border-collapse: collapse; table-layout: fixed; width: 100%; max-width: 700px}
+    #ecrus_summary_tb table :is(th, td) {border: 1px solid black; padding: 3px 10px 3px 10px;  }
     #tabellaStudenti tr:hover td {background-color: #daf0ff !important;}
     input[type='checkbox'] {cursor: pointer;}
-    tbody tr td:nth-child(n+5), #ecrus_summary_tb table td {text-align: right; font-family: monospace;}
-    tbody tr td:nth-child(-n+4) {text-align: left; font-family: monospace;}
+    #tabellaStudenti :is(td) {overflow: hidden; white-space: nowrap; text-overflow: ellipsis;}
+    #tabellaStudenti tbody tr td:nth-child(n+5), #ecrus_summary_tb table td, #ecrus_summary_tb table th {text-align: right; font-family: monospace;}
+    #ecrus_summary_tb table th {text-align: center; }
+    #tabellaStudenti tbody tr td:nth-child(-n+4) {text-align: left; font-family: monospace;}
+    #tabellaStudenti tbody tr td:nth-child(2) {max-width: 10%; padding-right: 30px !important;}
+    #tabellaStudenti tbody tr td:nth-child(4) {max-width: 200px; padding-right: 10px}
     </style>
  `)
 
@@ -158,18 +167,24 @@ function makeSummaryTable(buckets) {
             <table>
             <tr>
                 <td>&nbsp;</td>
-                <td>All (got)</td><td>Soft (Got)</td><td>Hard (Got)</td><td>Hard DIGEP (Got)</td>
-                <td>All</td><td>Soft</td><td>Hard</td><td>Hard DIGEP</td>
+                <th colspan="4">Tutti i Selezionati (All Selected)</th>
+                <th colspan="4">Ottenuti (Passed)</th>
             </tr>
             <tr>
-                <td>D</td>
-                <td>${buckets.AllPassed.D}</td><td>${buckets.SoftPassed.D}</td><td>${buckets.HardPassed.D}</td><td>${buckets.HardDigepPassed.D}</td>
+                <td>&nbsp;</td>
+                <th>All</th><th>Soft</th><th>Hard</th><th>Hard DIGEP</th>
+                <th>All</th><th>Soft</th><th>Hard</th><th>Hard DIGEP</th>
+            </tr>
+            <tr>
+                <th>D</th>
                 <td>${buckets.All.D}</td><td>${buckets.Soft.D}</td><td>${buckets.Hard.D}</td><td>${buckets.HardDigep.D}</td>
+                <td>${buckets.AllPassed.D}</td><td>${buckets.SoftPassed.D}</td><td>${buckets.HardPassed.D}</td><td>${buckets.HardDigepPassed.D}</td>
+               
             </tr>
             <tr>
-                <td>H</td>
-                <td>${buckets.AllPassed.H}</td><td>${buckets.SoftPassed.H}</td><td>${buckets.HardPassed.H}</td><td>${buckets.HardDigepPassed.H}</td>
+                <th>H</th>
                 <td>${buckets.All.H}</td><td>${buckets.Soft.H}</td><td>${buckets.Hard.H}</td><td>${buckets.HardDigep.H}</td>
+                <td>${buckets.AllPassed.H}</td><td>${buckets.SoftPassed.H}</td><td>${buckets.HardPassed.H}</td><td>${buckets.HardDigepPassed.H}</td>
             </tr>
             </table>
         `

@@ -4,6 +4,11 @@
 
 let cacheTime = undefined;
 
+const COURSE_MAP = {
+    "Ingegneria informatica e dei sistemi": "INFO",
+    "Gestione, produzione e design": "GPD",
+}
+
 const SCUDO_COURSES = fetch("http://dottorato.polito.it/zxd/b5eda0a74558a342cf659187f06f746f/91ce2c3036dfafbabde88e880869ed9z/", {mode: 'no-cors'})
     .then(response => response.json())
     .then(parseScudoCourses)
@@ -25,7 +30,7 @@ function parseScudoCourses(json) {
     return Object.fromEntries(
         json.lastCyclePhds.flatMap(({title: cds, cds: cdsId, courses}) => {
             return courses.map(({code, course, hours}) => {
-                return [code, {code, cdsId, cds, course, hours}]
+                return [code, {code, cdsId, cds: COURSE_MAP[cds], course, hours}]
             })
         }))
 }
