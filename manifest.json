@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "ECRUS - Enhanced CRUscotto Scudo",
+  "version": "1.0",
+  "description": "Funzioni aggiuntive per visualizzare il Cruscotto Scudo del PoliTO",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "531": "ecrus_logo.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab", "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://sid.polito.it/scudo/online/attivitaformative*"],
+      "js": ["contents/attivita-formative.js"]
+    },
+    {
+      "matches": [
+        "https://didattica.polito.it/pls/portal30/sviluppo.pagina_studente_2016*",
+        "https://sid.polito.it/scudo/online*"
+      ],
+      "js": ["contents/homepage.js"]
+    }
+  ],
+  "host_permissions": [
+    "https://dottorato.polito.it/zxd/*",
+    "http://dottorato.polito.it/zxd/*"
+  ]
+}
